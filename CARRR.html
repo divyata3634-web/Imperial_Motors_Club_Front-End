@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Imperial Motors Club — Luxury Car Store</title>
+<style>
+  /* --------- Theme & Layout --------- */
+  :root{
+    --bg:#071018; --card:#0f1720; --muted:#9fb0bf; --accent:#d4af37;
+    --glass: rgba(212,175,55,0.06);
+    --success:#1db954; --danger:#ff6b6b;
+    --maxwidth:1200px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Inter,system-ui,Arial,Helvetica,sans-serif;
+    background:linear-gradient(180deg,var(--bg),#071827);
+    color:#eaf3ff;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxwidth);margin:24px auto;padding:0 18px}
+
+  /* header */
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#0b1419,#07202a);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:18px;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
+  h1{margin:0;font-size:18px}
+  .tag{color:var(--muted);font-size:13px}
+
+  nav{display:flex;gap:8px}
+  .nav-btn{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04);padding:8px 12px;border-radius:8px;cursor:pointer}
+  .nav-btn.primary{background:var(--accent);color:#071018;border:none}
+
+  /* hero */
+  .hero{display:flex;gap:18px;margin-top:18px;padding:20px;border-radius:12px;background:linear-gradient(90deg, rgba(212,175,55,0.03), transparent);border:1px solid rgba(212,175,55,0.06);align-items:center}
+  .hero-left{flex:1}
+  .hero h2{color:var(--accent);margin:0 0 6px 0}
+  .hero p{margin:0;color:var(--muted)}
+
+  .hero-right{width:360px;height:200px;border-radius:10px;background-image:url('https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1600&q=80');background-size:cover;background-position:center;border:1px solid rgba(212,175,55,0.06)}
+
+  /* controls */
+  .controls{display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
+  input[type=text],select,textarea{padding:10px;border-radius:8px;border:none;background:#071722;color:#dff0ff;min-width:160px}
+  .controls .spacer{margin-left:auto}
+
+  /* grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:18px}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.04);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:transform .18s}
+  .card:hover{transform:translateY(-6px);box-shadow:0 24px 50px rgba(0,0,0,0.6)}
+  .card .img{height:160px;background-size:cover;background-position:center}
+  .card .body{padding:12px;display:flex;flex-direction:column;gap:6px}
+  .muted{color:var(--muted);font-size:13px}
+  .price{color:var(--accent);font-weight:700}
+  .actions{display:flex;gap:8px;margin-top:auto;flex-wrap:wrap}
+
+  /* modal */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;padding:20px;z-index:120}
+  .modal{width:100%;max-width:900px;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid rgba(212,175,55,0.08)}
+  .modal-body{display:flex;gap:12px;flex-wrap:wrap}
+  .m-img{width:50%;min-height:320px;background-size:cover;background-position:center}
+  .m-info{padding:18px;width:50%}
+  .specs{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .spec{background:var(--glass);padding:8px;border-radius:8px;font-size:13px}
+
+  /* cart panel */
+  .cart-panel{position:fixed;right:20px;top:90px;width:360px;background:var(--card);border-radius:12px;padding:12px;border:1px solid rgba(212,175,55,0.08);display:none;z-index:110;max-height:75vh;overflow:auto}
+  .cart-item{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+  .cart-item img{width:70px;height:50px;object-fit:cover;border-radius:6px}
+
+  /* admin panel */
+  .panel{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);margin-top:18px}
+  form{display:flex;flex-direction:column;gap:8px}
+  label{font-size:13px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse}
+  table td,table th{padding:8px;border-bottom:1px dashed rgba(255,255,255,0.03);font-size:13px}
+
+  /* compare bar */
+  .compare{display:flex;gap:12px;flex-wrap:wrap}
+  .compare-card{flex:1;min-width:220px;background:var(--card);padding:12px;border-radius:8px}
+
+  footer{text-align:center;color:var(--muted);margin-top:20px}
+
+  /* responsive tweaks */
+  @media (max-width:1000px){
+    .hero{flex-direction:column}
+    .hero-right{width:100%}
+    .m-img{width:100%}
+    .m-info{width:100%}
+    .cart-panel{position:static;width:100%;max-height:none;margin-top:12px}
+  }
+
+  /* small utilities */
+  .btn{padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);cursor:pointer}
+  .btn.primary{background:var(--accent);color:#071018;border:none}
+  .btn.small{padding:6px 8px;font-size:13px}
+  .toast{position:fixed;right:20px;bottom:24px;background:rgba(0,0,0,0.6);color:#fff;padding:10px 14px;border-radius:8px;z-index:200}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" id="logo">IM</div>
+        <div>
+          <h1>Imperial Motors Club</h1>
+          <div class="tag">Premium & Exotic Automobiles</div>
+        </div>
+      </div>
+
+      <nav>
+        <button class="nav-btn" onclick="showSection('shop')">Shop</button>
+        <button class="nav-btn" onclick="showSection('compare')">Compare</button>
+        <button class="nav-btn" onclick="showSection('bookings')">Bookings</button>
+        <button class="nav-btn" onclick="showSection('admin')">Admin</button>
+        <button class="nav-btn primary" id="viewCartBtn">Cart (<span id="cartCount">0</span>)</button>
+      </nav>
+    </header>
+
+    <div class="hero">
+      <div class="hero-left">
+        <h2>Find & Book Your Dream Luxury Car</h2>
+        <p class="muted">Curated selection of Porsche, Ferrari, Lamborghini, Bugatti, Tesla, BMW, Rolls-Royce and more.</p>
+
+        <div class="controls" style="margin-top:14px">
+          <input type="text" id="searchInput" placeholder="Search model, brand or year..." aria-label="Search cars">
+          <select id="brandFilter" aria-label="Filter by brand"><option value="">All brands</option></select>
+          <select id="sortSelect" aria-label="Sort options"><option value="featured">Featured</option><option value="price-asc">Price ↑</option><option value="price-desc">Price ↓</option></select>
+          <div class="spacer"></div>
+          <button class="btn" id="clearFilters">Clear</button>
+          <button class="btn" id="openInquiryBtn">Inquiry</button>
+        </div>
+      </div>
+
+      <div class="hero-right" aria-hidden="true"></div>
+    </div>
+
+    <!-- SHOP -->
+    <div id="shopTab">
+      <div class="grid" id="inventoryGrid" aria-live="polite"></div>
+    </div>
+
+    <!-- COMPARE -->
+    <div id="compareTab" style="display:none">
+      <div class="panel">
+        <h3>Compare Cars</h3>
+        <p class="muted">Select up to 3 cars to compare side-by-side.</p>
+        <div id="compareArea" class="compare"></div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div id="bookingsTab" style="display:none">
+      <div class="panel">
+        <h3>Your Test Drive Bookings</h3>
+        <div id="bookingsList" class="muted">No bookings yet.</div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="adminTab" style="display:none">
+      <div class="panel">
+        <h3>Admin — Local Demo</h3>
+        <form id="carForm">
+          <input id="carId" type="hidden">
+          <label>Brand</label><input id="carBrand" required>
+          <label>Model</label><input id="carModel" required>
+          <label>Year</label><input id="carYear" type="number" required>
+          <label>Price (INR)</label><input id="carPrice" type="number" required>
+          <label>Image URL</label><input id="carImg" placeholder="https://...">
+          <label>Description</label><textarea id="carDesc" rows="3"></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn primary" type="submit">Save Car</button>
+            <button class="btn" type="button" id="resetCar">Reset</button>
+          </div>
+        </form>
+
+        <h4 style="margin-top:12px">Inventory</h4>
+        <div id="adminInventory"></div>
+      </div>
+    </div>
+
+    <!-- EMI Panel -->
+    <div id="emiPanel" class="panel" style="margin-top:18px">
+      <h3 style="margin-top:0">EMI Calculator</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input id="emiAmount" type="number" placeholder="Loan Amount (₹)">
+        <input id="emiRate" type="number" step="0.01" placeholder="Annual Rate (%)">
+        <input id="emiMonths" type="number" placeholder="Tenure (months)">
+        <button class="btn primary" id="calcEmiBtn">Calculate</button>
+      </div>
+      <div id="emiResult" class="muted" style="margin-top:8px">EMI will appear here.</div>
+    </div>
+
+    <!-- Inquiry -->
+    <div id="inquiryPanel" class="panel" style="margin-top:18px">
+      <h3 style="margin-top:0">Inquiry / Contact</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="inqName" placeholder="Name" style="min-width:200px">
+        <input id="inqPhone" placeholder="Phone / WhatsApp" style="min-width:160px">
+        <input id="inqMsg" placeholder="Message" style="flex:1">
+        <button class="btn primary" id="sendInquiryBtn">Send Inquiry</button>
+      </div>
+    </div>
+
+    <footer>© <span id="year"></span> Imperial Motors Club — All rights reserved</footer>
+  </div>
+
+  <!-- modal for details -->
+  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-body">
+        <div class="m-img" id="modalImage"></div>
+        <div class="m-info">
+          <h2 id="modalTitle"></h2>
+          <div id="modalBrand" class="muted"></div>
+          <p id="modalDesc"></p>
+          <div class="specs" id="modalSpecs"></div>
+          <h3 id="modalPrice" class="price"></h3>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn primary" id="modalAddCart">Add to Cart</button>
+            <button class="btn" id="modalBook">Book Test Drive</button>
+            <button class="btn" id="modalCalc">EMI</button>
+            <button class="btn" id="modalClose">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- cart panel -->
+  <div id="cartPanel" class="cart-panel" aria-hidden="true">
+    <h3>Your Cart</h3>
+    <div id="cartList"></div>
+    <div style="margin-top:10px">Total: <span id="cartTotal" class="price">₹0</span></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn primary" id="checkoutNow">Proceed to Checkout</button>
+      <button class="btn" id="emptyCartBtn">Empty</button>
+    </div>
+  </div>
+
+<script>
+/* ---------------- Data: 30 premium cars (prices in INR) ----------------
+   Image URLs chosen from Unsplash / Motor1 / CarBuzz for demo quality.
+*/
+const DEFAULT_CARS = [
+  {id:1,brand:'Porsche',model:'911 Turbo S',year:2023,price:25500000,img:'https://images.unsplash.com/photo-1617449931517-ef3bc7a07ec6?auto=format&fit=crop&w=1400&q=80',desc:'High-performance rear-engined sports car.'},
+  {id:2,brand:'Ferrari',model:'F8 Tributo',year:2022,price:80000000,img:'https://cdn.motor1.com/images/mgl/0AN2B/s1/ferrari-f8-tributo.jpg',desc:'Mid-engine V8 Ferrari delivering blistering pace.'},
+  {id:3,brand:'Lamborghini',model:'Huracan EVO',year:2022,price:42000000,img:'https://images.unsplash.com/photo-1603386329225-868f9cbd2a46?auto=format&fit=crop&w=1400&q=80',desc:'V10 naturally aspirated thrill machine.'},
+  {id:4,brand:'Bugatti',model:'Chiron',year:2021,price:190000000,img:'https://cdn.motor1.com/images/mgl/8Zk1P/s3/bugatti-chiron-super-sport.jpg',desc:'Hypercar with extreme top speed.'},
+  {id:5,brand:'Bugatti',model:'Veyron',year:2018,price:150000000,img:'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1400&q=80',desc:'Legendary hypercar with record speed.'},
+  {id:6,brand:'Lamborghini',model:'Aventador',year:2021,price:65000000,img:'https://images.unsplash.com/photo-1511919884226-fd3cad34687c?auto=format&fit=crop&w=1400&q=80',desc:'V12 supercar with dramatic styling.'},
+  {id:7,brand:'Ferrari',model:'Roma',year:2021,price:55000000,img:'https://images.unsplash.com/photo-1542367597-2fd1c9d6b3b1?auto=format&fit=crop&w=1400&q=80',desc:'Elegant Ferrari GT.'},
+  {id:8,brand:'Tesla',model:'Model S Plaid',year:2023,price:12000000,img:'https://images.unsplash.com/photo-1617814073710-5374c1c7cf3e?auto=format&fit=crop&w=1400&q=80',desc:'Electric power with blistering acceleration.'},
+  {id:9,brand:'Tesla',model:'Model X Plaid',year:2022,price:9500000,img:'https://images.unsplash.com/photo-1519671282429-b44660ead0a7?auto=format&fit=crop&w=1400&q=80',desc:'Electric SUV with falcon doors and performance.'},
+  {id:10,brand:'BMW',model:'M8 Competition',year:2023,price:24000000,img:'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1400&q=80',desc:'Luxury performance coupe.'},
+  {id:11,brand:'BMW',model:'7 Series',year:2024,price:17000000,img:'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1400&q=80',desc:'Executive luxury sedan with advanced tech.'},
+  {id:12,brand:'Mercedes-Benz',model:'S-Class',year:2024,price:22000000,img:'https://images.unsplash.com/photo-1542367597-2fd1c9d6b3b1?auto=format&fit=crop&w=1400&q=80',desc:'Flagship luxury sedan.'},
+  {id:13,brand:'Mercedes-Benz',model:'G-Class',year:2021,price:21000000,img:'https://images.unsplash.com/photo-1549921296-3d62b6d5c7f3?auto=format&fit=crop&w=1400&q=80',desc:'Iconic luxury off-roader.'},
+  {id:14,brand:'Rolls-Royce',model:'Phantom',year:2024,price:95000000,img:'https://images.unsplash.com/photo-1600863777102-47a7e0f6e4e5?auto=format&fit=crop&w=1400&q=80',desc:'Ultra-luxury flagship saloon.'},
+  {id:15,brand:'Rolls-Royce',model:'Dawn',year:2021,price:98000000,img:'https://images.unsplash.com/photo-1600863777102-47a7e0f6e4e5?auto=format&fit=crop&w=1400&q=80',desc:'Luxury convertible.'},
+  {id:16,brand:'Bentley',model:'Continental GT',year:2021,price:42000000,img:'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1400&q=80',desc:'Grand tourer blending speed and luxury.'},
+  {id:17,brand:'Bentley',model:'Flying Spur',year:2022,price:52000000,img:'https://images.unsplash.com/photo-1511391030167-45b66efc0b43?auto=format&fit=crop&w=1400&q=80',desc:'Executive sedan with presence.'},
+  {id:18,brand:'Porsche',model:'Cayenne Turbo',year:2022,price:18000000,img:'https://images.unsplash.com/photo-1549921296-3d62b6d5c7f3?auto=format&fit=crop&w=1400&q=80',desc:'Performance SUV with Porsche DNA.'},
+  {id:19,brand:'Porsche',model:'Taycan Turbo',year:2023,price:20000000,img:'https://images.unsplash.com/photo-1552519507-cca5?auto=format&fit=crop&w=1400&q=80',desc:'Electric Porsche with handling.'},
+  {id:20,brand:'Audi',model:'R8',year:2020,price:18000000,img:'https://images.unsplash.com/photo-1519671282429-b44660ead0a7?auto=format&fit=crop&w=1400&q=80',desc:'Audi supercar with quattro grip.'},
+  {id:21,brand:'Audi',model:'A8',year:2023,price:12000000,img:'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1400&q=80',desc:'Executive sedan.'},
+  {id:22,brand:'Maserati',model:'Ghibli',year:2021,price:12000000,img:'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1400&q=80',desc:'Italian luxury sedan.'},
+  {id:23,brand:'McLaren',model:'720S',year:2021,price:85000000,img:'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1400&q=80',desc:'Exotic mid-engine supercar.'},
+  {id:24,brand:'McLaren',model:'Artura',year:2023,price:72000000,img:'https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1400&q=80',desc:'Hybrid McLaren supercar.'},
+  {id:25,brand:'Aston Martin',model:'DB11',year:2020,price:45000000,img:'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1400&q=80',desc:'Grand tourer from Aston Martin.'},
+  {id:26,brand:'Aston Martin',model:'Vantage',year:2021,price:18000000,img:'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1400&q=80',desc:'Driver-focused coupe.'},
+  {id:27,brand:'Jaguar',model:'F-Type',year:2021,price:9000000,img:'https://images.unsplash.com/photo-1542367597-2fd1c9d6b3b1?auto=format&fit=crop&w=1400&q=80',desc:'Sporty British coupe.'},
+  {id:28,brand:'Land Rover',model:'Range Rover Autobiography',year:2022,price:35000000,img:'https://images.unsplash.com/photo-1549921296-3d62b6d5c7f3?auto=format&fit=crop&w=1400&q=80',desc:'Top-tier luxury SUV.'},
+  {id:29,brand:'Koenigsegg',model:'Jesko',year:2021,price:250000000,img:'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1400&q=80',desc:'Ultra-rare hypercar performance.'},
+  {id:30,brand:'Pagani',model:'Huayra',year:2020,price:220000000,img:'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1400&q=80',desc:'Art-meets-speed hypercar.'}
+];
+
+/* ---------------- Local storage keys ---------------- */
+const LS = {CARS:'im_cars_v4',CART:'im_cart_v4',BOOKINGS:'im_bookings_v4',INQUIRIES:'im_inq_v4' };
+
+/* ---------- Initialize cars from LS or defaults ---------- */
+let cars = JSON.parse(localStorage.getItem(LS.CARS) || 'null');
+if(!Array.isArray(cars)){ cars = DEFAULT_CARS.slice(); localStorage.setItem(LS.CARS, JSON.stringify(cars)); }
+
+/* ---------- Utilities ---------- */
+const el = id => document.getElementById(id);
+function formatINR(n){ return '₹' + Number(n).toLocaleString('en-IN'); }
+function showToast(msg, t=2200){
+  const d = document.createElement('div'); d.className='toast'; d.textContent=msg; document.body.appendChild(d);
+  setTimeout(()=>{ d.style.opacity='0'; setTimeout(()=>d.remove(),300); }, t);
+}
+
+/* ---------- Render brand filter ---------- */
+function populateBrandFilter(){
+  const bf = el('brandFilter'); bf.innerHTML = '<option value=\"\">All brands</option>';
+  const brands = Array.from(new Set(cars.map(c=>c.brand))).sort();
+  brands.forEach(b=>{ const o = document.createElement('option'); o.value=b; o.textContent=b; bf.appendChild(o); });
+}
+populateBrandFilter();
+
+/* ---------- Inventory rendering ---------- */
+const inventoryGrid = el('inventoryGrid');
+function renderGrid(list){
+  inventoryGrid.innerHTML = '';
+  list.forEach((car, idx) => {
+    const card = document.createElement('div'); card.className='card';
+    card.innerHTML = `
+      <div class="img" style="background-image:url('${car.img}')"></div>
+      <div class="body">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700">${car.model}</div>
+            <div class="muted">${car.brand} • ${car.year}</div>
+          </div>
+          <div class="price">${formatINR(car.price)}</div>
+        </div>
+        <div class="muted" style="margin-top:8px">${car.desc || ''}</div>
+        <div class="actions">
+          <button class="btn small" data-id="${car.id}" data-action="details">Details</button>
+          <button class="btn primary small" data-id="${car.id}" data-action="add">Add to Cart</button>
+          <button class="btn small" data-id="${car.id}" data-action="compare">Compare</button>
+        </div>
+      </div>
+    `;
+    inventoryGrid.appendChild(card);
+  });
+
+  // wire up buttons
+  inventoryGrid.querySelectorAll('[data-action="details"]').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    const id = Number(b.dataset.id); viewDetail(id);
+  }));
+  inventoryGrid.querySelectorAll('[data-action="add"]').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    const id = Number(b.dataset.id); addToCart(id);
+  }));
+  inventoryGrid.querySelectorAll('[data-action="compare"]').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    const id = Number(b.dataset.id); toggleCompare(id);
+  }));
+}
+
+/* ---------- Filter, Search, Sort ---------- */
+const searchInput = el('searchInput'), brandFilter = el('brandFilter'), sortSelect = el('sortSelect'), clearFilters = el('clearFilters');
+function getFiltered(){
+  const q = (searchInput.value || '').trim().toLowerCase();
+  const brand = brandFilter.value;
+  let list = cars.filter(c => {
+    const hay = `${c.brand} ${c.model} ${c.year}`.toLowerCase();
+    return (q==='' || hay.includes(q)) && (brand==='' || c.brand===brand);
+  });
+  const sort = sortSelect.value;
+  if(sort==='price-asc') list.sort((a,b)=>a.price-b.price);
+  if(sort==='price-desc') list.sort((a,b)=>b.price-a.price);
+  return list;
+}
+searchInput.addEventListener('input', ()=> renderGrid(getFiltered()));
+brandFilter.addEventListener('change', ()=> renderGrid(getFiltered()));
+sortSelect.addEventListener('change', ()=> renderGrid(getFiltered()));
+clearFilters.addEventListener('click', ()=>{
+  searchInput.value=''; brandFilter.value=''; sortSelect.value='featured'; renderGrid(getFiltered());
+});
+
+/* ---------- Initial grid render ---------- */
+renderGrid(getFiltered());
+
+/* ---------- Modal (details) ---------- */
+const modalBackdrop = el('modalBackdrop'), modalImage = el('modalImage'), modalTitle = el('modalTitle'),
+      modalBrand = el('modalBrand'), modalDesc = el('modalDesc'), modalSpecs = el('modalSpecs'), modalPrice = el('modalPrice'),
+      modalAddCart = el('modalAddCart'), modalBook = el('modalBook'), modalCalc = el('modalCalc'), modalClose = el('modalClose');
+
+let currentCar = null;
+function viewDetail(id){
+  currentCar = cars.find(c=>c.id===id);
+  if(!currentCar) return;
+  modalImage.style.backgroundImage = `url('${currentCar.img}')`;
+  modalTitle.textContent = currentCar.model;
+  modalBrand.textContent = `${currentCar.brand} • ${currentCar.year}`;
+  modalDesc.textContent = currentCar.desc || '';
+  modalSpecs.innerHTML = `<div class="spec">Seats: 2/4</div><div class="spec">Transmission: Automatic</div><div class="spec">Engine: —</div>`;
+  modalPrice.textContent = formatINR(currentCar.price);
+  modalBackdrop.style.display = 'flex';
+  modalBackdrop.setAttribute('aria-hidden','false');
+}
+modalClose.addEventListener('click', ()=> { modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); });
+modalBackdrop.addEventListener('click', e => { if(e.target===modalBackdrop){ modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); } });
+modalAddCart.addEventListener('click', ()=>{ if(currentCar) addToCart(currentCar.id); modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); });
+modalBook.addEventListener('click', ()=>{ if(currentCar) openBooking(currentCar.id); });
+modalCalc.addEventListener('click', ()=>{ if(currentCar) openEMIForCar(currentCar); });
+
+/* ---------- Cart (localStorage) ---------- */
+function getCart(){ try{ return JSON.parse(localStorage.getItem(LS.CART) || '[]'); }catch(e){ return []; } }
+function setCart(v){ localStorage.setItem(LS.CART, JSON.stringify(v)); }
+
+function addToCart(id){
+  const car = cars.find(c=>c.id===id);
+  if(!car) return showToast('Car not found');
+  const cart = getCart();
+  const idx = cart.findIndex(i=>i.id===id);
+  if(idx>-1) cart[idx].qty += 1; else cart.push({id:car.id,model:car.model,brand:car.brand,price:car.price,img:car.img,qty:1});
+  setCart(cart); updateCartUI(); showToast(`${car.model} added to cart`);
+}
+
+function removeFromCart(id){
+  let cart = getCart().filter(i=>i.id!==id);
+  setCart(cart); updateCartUI(); showToast('Removed from cart');
+}
+
+function updateCartQty(id, qty){
+  let cart = getCart().map(i=> i.id===id ? {...i, qty: Math.max(1, qty)} : i );
+  setCart(cart); updateCartUI();
+}
+
+function clearCart(){ localStorage.removeItem(LS.CART); updateCartUI(); showToast('Cart cleared'); }
+
+const cartPanel = el('cartPanel'), cartList = el('cartList'), cartTotal = el('cartTotal'), cartCountEl = el('cartCount');
+function updateCartUI(){
+  const cart = getCart();
+  cartList.innerHTML = '';
+  let total = 0, count = 0;
+  if(cart.length===0){ cartList.innerHTML = '<div class="muted">No items in cart.</div>'; }
+  else {
+    cart.forEach(item=>{
+      total += item.price * item.qty; count += item.qty;
+      const div = document.createElement('div');
+      div.className = 'cart-item';
+      div.innerHTML = `<img src="${item.img}" alt="${item.model}"><div style="flex:1"><div style="font-weight:700">${item.model}</div><div class="muted">${item.brand}</div></div>
+        <div style="text-align:right"><div>${formatINR(item.price)}</div><div class="muted">x${item.qty}</div>
+        <div style="margin-top:6px"><button class="btn small" data-decrease="${item.id}">-</button> <button class="btn small" data-increase="${item.id}">+</button></div>
+        <div style="margin-top:6px"><button class="btn small" data-remove="${item.id}">Remove</button></div></div>`;
+      cartList.appendChild(div);
+    });
+    // wire actions
+    cartList.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click', e=> removeFromCart(Number(b.dataset.remove))));
+    cartList.querySelectorAll('[data-decrease]').forEach(b=>b.addEventListener('click', e=>{
+      const id = Number(b.dataset.decrease); const c = getCart(); const it = c.find(x=>x.id===id); if(it){ updateCartQty(id, it.qty-1); }
+    }));
+    cartList.querySelectorAll('[data-increase]').forEach(b=>b.addEventListener('click', e=>{
+      const id = Number(b.dataset.increase); const c = getCart(); const it = c.find(x=>x.id===id); if(it){ updateCartQty(id, it.qty+1); }
+    }));
+  }
+  cartTotal.textContent = formatINR(total);
+  cartCountEl.textContent = count;
+  el('viewCartBtn').textContent = `Cart (${count})`;
+}
+
+el('viewCartBtn').addEventListener('click', toggleCart);
+el('emptyCartBtn').addEventListener('click', ()=>{ if(confirm('Clear cart?')) clearCart(); });
+el('checkoutNow').addEventListener('click', ()=>{ if(getCart().length===0) return alert('Cart is empty'); alert('Checkout placeholder — integrate a payment gateway for production.'); });
+
+function toggleCart(){ const isShown = cartPanel.style.display === 'block'; cartPanel.style.display = isShown ? 'none' : 'block'; }
+
+/* ---------- Compare tool ---------- */
+let compareSet = new Set();
+const compareArea = el('compareArea');
+
+function toggleCompare(id){
+  if(compareSet.has(id)){ compareSet.delete(id); showToast('Removed from compare'); renderCompare(); return; }
+  if(compareSet.size >= 3){ showToast('You can compare up to 3 cars'); return; }
+  compareSet.add(id); showToast('Added to compare'); renderCompare();
+}
+
+function renderCompare(){
+  compareArea.innerHTML = '';
+  if(compareSet.size===0){ compareArea.innerHTML = '<div class="muted">No cars selected</div>'; return; }
+  Array.from(compareSet).forEach(id=>{
+    const c = cars.find(x=>x.id===id); if(!c) return;
+    const div = document.createElement('div'); div.className='compare-card';
+    div.innerHTML = `<div style="font-weight:700">${c.model}</div><div class="muted">${c.brand}</div><div class="price">${formatINR(c.price)}</div><div style="margin-top:8px"><button class="btn small" data-view="${c.id}">View</button> <button class="btn small" data-remove="${c.id}">Remove</button></div>`;
+    compareArea.appendChild(div);
+  });
+  compareArea.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click', e=> viewDetail(Number(b.dataset.view))));
+  compareArea.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click', e=>{ compareSet.delete(Number(b.dataset.remove)); renderCompare(); }));
+}
+
+/* ---------- Test-drive bookings ---------- */
+function getBookings(){ try{ return JSON.parse(localStorage.getItem(LS.BOOKINGS) || '[]'); }catch(e){ return []; } }
+function setBookings(v){ localStorage.setItem(LS.BOOKINGS, JSON.stringify(v)); }
+function openBooking(carId){
+  const car = cars.find(c=>c.id===carId); if(!car) return;
+  const name = prompt(`Booking — ${car.brand} ${car.model}\nEnter your name:`); if(!name) return;
+  const phone = prompt('Phone / WhatsApp number:'); if(!phone) return;
+  const date = prompt('Preferred date (YYYY-MM-DD):'); if(!date) return;
+  const list = getBookings(); list.push({id:Date.now(), carId, carModel: car.model, name, phone, date}); setBookings(list); renderBookings(); showToast('Test drive booked — we will contact you.');
+}
+function renderBookings(){
+  const b = getBookings(); const elB = el('bookingsList'); if(b.length===0) elB.innerHTML = 'No bookings yet.'; else elB.innerHTML = b.map(x=>`<div style="padding:8px;border-bottom:1px dashed rgba(255,255,255,0.03)"><strong>${x.carModel}</strong> — ${x.date}<br/><span class="muted">${x.name} • ${x.phone}</span></div>`).join('');
+}
+renderBookings();
+
+/* ---------- EMI Calculator ---------- */
+function calcEMI(P, annualRate, months){
+  const r = annualRate/12/100;
+  if(months<=0) return 0;
+  if(r===0) return P/months;
+  const emi = P * r * Math.pow(1+r, months)/(Math.pow(1+r, months)-1);
+  return emi;
+}
+el('calcEmiBtn').addEventListener('click', ()=>{
+  const P = Number(el('emiAmount').value || 0); const rate = Number(el('emiRate').value || 0); const months = Number(el('emiMonths').value || 0);
+  if(!P||!rate||!months) return showToast('Enter amount, rate and months');
+  const emi = calcEMI(P,rate,months); const total = emi*months;
+  el('emiResult').innerHTML = `EMI: <strong>${formatINR(Math.round(emi))}</strong> • Total Payable: <strong>${formatINR(Math.round(total))}</strong>`;
+});
+
+/* prefill EMI for a car */
+function openEMIForCar(car){
+  el('emiAmount').value = car.price; el('emiRate').value = 9.5; el('emiMonths').value = 60; window.scrollTo({top:el('emiPanel').offsetTop,behavior:'smooth'}); showToast('EMI prefilled — calculate on the EMI panel');
+}
+
+/* ---------- Inquiry ---------- */
+el('sendInquiryBtn').addEventListener('click', ()=>{
+  const name = el('inqName').value.trim(), phone = el('inqPhone').value.trim(), msg = el('inqMsg').value.trim();
+  if(!name||!phone||!msg) return showToast('Please fill inquiry fields');
+  const list = JSON.parse(localStorage.getItem(LS.INQUIRIES) || '[]'); list.push({id:Date.now(),name,phone,msg}); localStorage.setItem(LS.INQUIRIES, JSON.stringify(list));
+  el('inqName').value=''; el('inqPhone').value=''; el('inqMsg').value=''; showToast('Inquiry submitted — we will contact you');
+});
+
+/* ---------- Admin panel (local demo) ---------- */
+function renderAdminInventory(){
+  const out = document.createElement('div'); out.innerHTML = `<table><tr><th>ID</th><th>Car</th><th>Price</th><th>Actions</th></tr>` + cars.map(c=>`<tr><td>${c.id}</td><td>${c.brand} ${c.model}<div class="muted">${c.desc||''}</div></td><td>${formatINR(c.price)}</td><td><button class="btn small" data-edit="${c.id}">Edit</button> <button class="btn small" data-del="${c.id}">Delete</button></td></tr>`).join('') + `</table>`;
+  el('adminInventory').innerHTML = ''; el('adminInventory').appendChild(out);
+  el('adminInventory').querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click', e=> editCarForm(Number(b.dataset.edit))));
+  el('adminInventory').querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', e=> { if(confirm('Delete this car?')){ cars = cars.filter(x=>x.id!==Number(b.dataset.del)); localStorage.setItem(LS.CARS, JSON.stringify(cars)); populateBrandFilter(); renderGrid(getFiltered()); renderAdminInventory(); showToast('Car deleted'); } }));
+}
+renderAdminInventory();
+
+el('carForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const id = Number(el('carId').value || 0);
+  const brand = el('carBrand').value.trim(), model = el('carModel').value.trim();
+  const year = Number(el('carYear').value), price = Number(el('carPrice').value);
+  const img = el('carImg').value.trim() || 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1400&q=80';
+  const desc = el('carDesc').value.trim();
+  if(!brand||!model||!year||!price) return showToast('Fill required fields');
+  if(id){
+    cars = cars.map(c=> c.id===id ? {id,brand,model,year,price,img,desc} : c );
+    showToast('Car updated');
+  } else {
+    const newId = cars.length ? Math.max(...cars.map(c=>c.id))+1 : 1;
+    cars.unshift({id:newId,brand,model,year,price,img,desc});
+    showToast('Car added');
+  }
+  localStorage.setItem(LS.CARS, JSON.stringify(cars));
+  populateBrandFilter(); renderGrid(getFiltered()); renderAdminInventory();
+  el('carForm').reset(); el('carId').value='';
+});
+
+function editCarForm(id){
+  const c = cars.find(x=>x.id===id); if(!c) return;
+  el('carId').value = c.id; el('carBrand').value = c.brand; el('carModel').value = c.model; el('carYear').value = c.year; el('carPrice').value = c.price; el('carImg').value = c.img; el('carDesc').value = c.desc;
+  window.scrollTo({top:el('adminTab').offsetTop,behavior:'smooth'});
+}
+el('resetCar').addEventListener('click', ()=> { el('carForm').reset(); el('carId').value=''; });
+
+/* ---------- Small helpers & events ---------- */
+function showSection(name){
+  ['shop','compare','bookings','admin'].forEach(n=>{
+    const elTab = document.getElementById(n+'Tab');
+    if(elTab) elTab.style.display = (n===name ? '' : 'none');
+  });
+  if(name==='shop') window.scrollTo({top:0,behavior:'smooth'});
+}
+showSection('shop');
+
+function openEMIForCar(car){ openEMIForCar(car); } // placeholder to keep API
+
+// keyboard: close modal/cart with Esc
+window.addEventListener('keydown', e=>{ if(e.key==='Escape'){ if(modalBackdrop.style.display==='flex'){ modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); } if(cartPanel.style.display==='block') cartPanel.style.display='none'; } });
+
+// update cart UI on load
+updateCartUI();
+
+// set year
+el('year').textContent = new Date().getFullYear();
+
+/* If user clicks details directly from grid (bubbling), support it by delegation */
+inventoryGrid.addEventListener('click', e=>{
+  // clicking the card body should show details too (if not on a button)
+  const btn = e.target.closest('button');
+  if(btn) return; // handled above
+  const card = e.target.closest('.card');
+  if(!card) return;
+  // find model text inside and match car
+  const title = card.querySelector('.body div div').textContent.trim();
+  const found = cars.find(c=>c.model===title || `${c.brand} ${c.model}`.includes(title));
+  if(found) viewDetail(found.id);
+});
+
+/* notify initial readiness */
+showToast('Imperial Motors Club loaded',1200);
+</script>
+</body>
+</html>
